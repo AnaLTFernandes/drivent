@@ -4,17 +4,21 @@ export type ApplicationError = {
 };
 
 export type ViaCEPAddress = {
-  logradouro: string,
-  complemento: string,
-  bairro: string,
-  localidade: string,
-  uf: string,
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+};
+
+export type AddressCEP = Omit<ViaCEPAddress, "localidade"> & {
+  cidade: string;
 };
 
 export type RequestError = {
-  status: number,
-  data: object | null,
-  statusText: string,
-  name: string,
-  message: string,
+  status: number;
+  data: object | null;
+  statusText: string;
+  name: string;
+  message: string;
 };
