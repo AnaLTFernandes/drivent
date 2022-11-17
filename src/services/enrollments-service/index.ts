@@ -53,8 +53,6 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   await addressRepository.upsert(newEnrollment.id, address, address);
 }
 
-type ViaCepResult = { data: { erro: boolean } };
-
 function getAddressForUpsert(address: CreateAddressParams) {
   return {
     ...address,

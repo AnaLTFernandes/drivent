@@ -12,3 +12,15 @@ export async function getTicketTypes(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 }
+
+export async function getTicketsFromUser(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+
+  try {
+    const ticket = await ticketsService.getTicketFromUser(userId);
+
+    return res.status(httpStatus.OK).send(ticket);
+  } catch (error) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}
