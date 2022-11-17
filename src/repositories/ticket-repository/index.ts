@@ -49,11 +49,24 @@ async function createTicket(createTicket: CreateTicketParams) {
 
 export type CreateTicketParams = { enrollmentId: number; ticketTypeId: number };
 
+function updateTicketStatus(id: number) {
+  return prisma.ticket.update({
+    where: { id },
+    data: {
+      status: "PAID",
+    },
+    include: {
+      TicketType: true,
+    },
+  });
+}
+
 const ticketRepository = {
   findTypes,
   findTicketByEnrollmentId,
   createTicket,
   findTicketById,
+  updateTicketStatus,
 };
 
 export default ticketRepository;
