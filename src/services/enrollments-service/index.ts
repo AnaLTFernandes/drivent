@@ -1,15 +1,13 @@
-import { request } from "@/utils/request";
 import { notFoundError } from "@/errors";
 import addressRepository, { CreateAddressParams } from "@/repositories/address-repository";
 import enrollmentRepository, { CreateEnrollmentParams } from "@/repositories/enrollment-repository";
 import { exclude } from "@/utils/prisma-utils";
 import { Address, Enrollment } from "@prisma/client";
-import { ViaCEPAddress, AddressCEP } from "@/protocols";
+import { AddressCEP } from "@/protocols";
+import { getAddress } from "@/utils/cep-service";
 
 async function getAddressFromCEP(cep: string): Promise<AddressCEP> {
-  const { data: result } = (await request.get(`https://viacep.com.br/ws/${cep}/json/`)) as {
-    data: ViaCEPAddress | null;
-  };
+  const result = await getAddress(cep);
 
   if (!result) throw notFoundError();
 
@@ -46,9 +44,9 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   const enrollment = exclude(params, "address");
   const address = getAddressForUpsert(params.address);
 
-  const { data: result } = (await request.get(`https://viacep.com.br/ws/${address.cep}/json/`)) as ViaCepResult;
+  const result = await getAddressFromCEP(address.cep);
 
-  if (result.erro) throw notFoundError();
+  if (!result.cidade) throw notFoundError();
 
   const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"));
 
