@@ -15,20 +15,20 @@ async function getUserPayment(userId: number, ticketId: number): Promise<Payment
   return payment;
 }
 
-async function postPayment(userId: number, body: CreatePaymentParams): Promise<Payment> {
-  const ticket = await ticketRepository.findTicketById(body.ticketId);
+async function postPayment(userId: number, { ticketId, cardData }: CreatePayment): Promise<Payment> {
+  const ticket = await ticketRepository.findTicketById(ticketId);
 
   if (!ticket) throw notFoundError();
 
   if (ticket.Enrollment.userId !== userId) throw unauthorizedError();
 
-  const updatedTicket = await ticketRepository.updateTicketStatus(body.ticketId);
+  const updatedTicket = await ticketRepository.updateTicketStatus(ticketId);
 
   const createPayment = {
+    ticketId,
+    cardIssuer: cardData.issuer,
+    cardLastDigits: cardData.number.slice(-4),
     value: updatedTicket.TicketType.price,
-    cardIssuer: body.cardData.issuer,
-    cardLastDigits: body.cardData.number.toString().slice(-4),
-    ticketId: body.ticketId,
   };
 
   const payment = await paymentRepository.createPayment(createPayment);
@@ -36,16 +36,14 @@ async function postPayment(userId: number, body: CreatePaymentParams): Promise<P
   return payment;
 }
 
-export type FindPaymentParams = { ticketId: string };
-
-export type CreatePaymentParams = {
+export type CreatePayment = {
   ticketId: number;
   cardData: {
     issuer: string;
-    number: number;
+    number: string;
     name: string;
-    expirationDate: Date;
-    cvv: number;
+    expirationDate: string;
+    cvv: string;
   };
 };
 

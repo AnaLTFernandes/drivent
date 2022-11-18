@@ -21,8 +21,6 @@ async function getTicketFromUser(userId: number): Promise<Ticket> {
   return ticketFromUser;
 }
 
-export type PostTicketParams = { ticketTypeId: number | undefined };
-
 async function postTicket(userId: number, ticketTypeId: number): Promise<Ticket> {
   const enrollmentFromUser = await getEnrollmentFromUserByUserId(userId);
 
@@ -40,6 +38,8 @@ function getEnrollmentFromUserByUserId(userId: number): Promise<getEnrollmentFro
 type getEnrollmentFromUserByUserIdResult = Enrollment & {
   Address: Address[];
 };
+
+export type PostTicketParams = { ticketTypeId: number | undefined };
 
 const ticketsService = {
   getTicketTypes,

@@ -1,18 +1,16 @@
 import { Response } from "express";
 import httpStatus from "http-status";
 import { AuthenticatedRequest } from "@/middlewares";
-import paymentsService, { CreatePaymentParams, FindPaymentParams } from "@/services/payments-service";
+import paymentsService, { CreatePayment } from "@/services/payments-service";
 
 export async function getUserPayment(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const { ticketId } = req.query as FindPaymentParams;
+  const ticketId = Number(req.query.ticketId) | 0;
 
   if (!ticketId) return res.sendStatus(httpStatus.BAD_REQUEST);
 
-  const ticket = Number(ticketId);
-
   try {
-    const payment = await paymentsService.getUserPayment(userId, ticket);
+    const payment = await paymentsService.getUserPayment(userId, ticketId);
 
     return res.status(httpStatus.OK).send(payment);
   } catch (error) {
@@ -25,7 +23,7 @@ export async function getUserPayment(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function postPayment(req: AuthenticatedRequest, res: Response) {
-  const { ticketId, cardData } = req.body as CreatePaymentParams;
+  const { ticketId, cardData } = req.body as CreatePayment;
   const { userId } = req;
 
   if (!ticketId || !cardData) return res.sendStatus(httpStatus.BAD_REQUEST);
