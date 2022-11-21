@@ -26,8 +26,6 @@ export async function postPayment(req: AuthenticatedRequest, res: Response) {
   const { ticketId, cardData } = req.body as CreatePayment;
   const { userId } = req;
 
-  if (!ticketId || !cardData) return res.sendStatus(httpStatus.BAD_REQUEST);
-
   try {
     const payment = await paymentsService.postPayment(userId, { ticketId, cardData });
 
