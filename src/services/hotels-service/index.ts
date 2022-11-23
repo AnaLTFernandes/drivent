@@ -1,5 +1,6 @@
+import { Hotel, Room } from "@prisma/client";
+import { notFoundError } from "@/errors";
 import hotelRepository from "@/repositories/hotel-repository";
-import { Hotel } from "@prisma/client";
 
 async function getHotels(): Promise<GetHotelsResult[]> {
   const hotelsResult = await hotelRepository.findHotels();
@@ -29,13 +30,30 @@ async function getHotels(): Promise<GetHotelsResult[]> {
   return hotels;
 }
 
+async function getRoomsFromHotel(hotelId: number): Promise<GetRoomsFromHotelResult[]> {
+  const hotel = await hotelRepository.findHotelById(hotelId);
+
+  if (!hotel) throw notFoundError();
+
+  const roomsResult = await hotelRepository.findRoomsFromHotel(hotelId);
+
+  const rooms = roomsResult.map(({ id, name, capacity, _count }) => ({ id, name, capacity, bookeds: _count.Booking }));
+
+  return rooms;
+}
+
 export type GetHotelsResult = Omit<Hotel, "createdAt" | "updatedAt"> & {
   maxCapacityPerRoom: number;
   availableVacancies: number;
 };
 
+export type GetRoomsFromHotelResult = Omit<Room, "hotelId" | "createdAt" | "updatedAt"> & {
+  bookeds: number;
+};
+
 const hotelsService = {
   getHotels,
+  getRoomsFromHotel,
 };
 
 export default hotelsService;
