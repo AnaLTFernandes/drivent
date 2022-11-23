@@ -7,14 +7,19 @@ export function createHotel() {
       name: faker.name.findName(),
       image: faker.image.city(),
       Rooms: {
-        create: {
-          name: faker.name.findName(),
-          capacity: faker.datatype.number({ min: 1, max: 3 }),
+        createMany: {
+          data: [
+            {
+              name: faker.name.findName(),
+              capacity: 1,
+            },
+            {
+              name: faker.name.findName(),
+              capacity: 2,
+            },
+          ],
         },
       },
-    },
-    include: {
-      Rooms: true,
     },
   });
 }

@@ -7,8 +7,8 @@ import { createUser, createHotel } from "../factories";
 import { cleanDb, generateValidToken } from "../helpers";
 
 beforeAll(async () => {
-  init();
-  cleanDb();
+  await init();
+  await cleanDb();
 });
 
 const server = supertest(app);
@@ -45,15 +45,18 @@ describe("GET /hotels", () => {
 
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
 
-      // TODO mudar body de resposta
       expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual([
-        {
-          id: hotel.id,
-          name: hotel.name,
-          image: hotel.image,
-        },
-      ]);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          {
+            id: hotel.id,
+            name: hotel.name,
+            image: hotel.image,
+            maxCapacityPerRoom: 2,
+            availableVacancies: 3,
+          },
+        ]),
+      );
     });
   });
 });
