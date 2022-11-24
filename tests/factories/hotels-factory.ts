@@ -1,7 +1,7 @@
 import faker from "@faker-js/faker";
 import { prisma } from "@/config";
 
-export function createHotel() {
+export function createHotelWithRooms() {
   return prisma.hotel.create({
     data: {
       name: faker.name.findName(),
@@ -21,5 +21,6 @@ export function createHotel() {
         },
       },
     },
+    include: { Rooms: true },
   });
 }

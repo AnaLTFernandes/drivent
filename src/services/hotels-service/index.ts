@@ -1,16 +1,16 @@
 import { Hotel, Room, TicketStatus } from "@prisma/client";
 import { notFoundError, unauthorizedError } from "@/errors";
+import { paymentRequiredError } from "./errors";
 import hotelRepository from "@/repositories/hotel-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
-import { paymentRequiredError } from "./errors";
 
 async function getHotels(userId: number): Promise<GetHotelsResult[]> {
   await validateUserTicketOrFail(userId);
   const hotelsResult = await hotelRepository.findHotels();
 
-  const RoomsData = { maxCapacityPerRoom: 1, totalVacancies: 0, vacanciesReserved: 0 };
   const hotels: GetHotelsResult[] = [];
+  const RoomsData = { maxCapacityPerRoom: 1, totalVacancies: 0, vacanciesReserved: 0 };
 
   hotelsResult.forEach((hotel) => {
     hotel.Rooms.forEach(({ capacity, _count: { Booking: bookings } }) => {
@@ -19,7 +19,7 @@ async function getHotels(userId: number): Promise<GetHotelsResult[]> {
       }
 
       RoomsData.totalVacancies += capacity;
-      RoomsData.vacanciesReserved = bookings;
+      RoomsData.vacanciesReserved += bookings;
     });
 
     hotels.push({
@@ -51,7 +51,7 @@ async function getRoomsFromHotel(hotelId: number, userId: number): Promise<GetRo
 async function validateUserTicketOrFail(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
 
-  if (!enrollment) throw paymentRequiredError();
+  if (!enrollment) throw unauthorizedError();
 
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
@@ -60,8 +60,6 @@ async function validateUserTicketOrFail(userId: number) {
   if (ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) throw unauthorizedError();
 
   if (ticket.status !== TicketStatus.PAID) throw paymentRequiredError();
-
-  return;
 }
 
 export type GetHotelsResult = Omit<Hotel, "createdAt" | "updatedAt"> & {
