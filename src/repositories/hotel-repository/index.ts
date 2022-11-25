@@ -2,10 +2,7 @@ import { prisma } from "@/config";
 
 async function findHotels() {
   return prisma.hotel.findMany({
-    select: {
-      id: true,
-      name: true,
-      image: true,
+    include: {
       Rooms: {
         select: {
           capacity: true,
@@ -21,32 +18,27 @@ async function findHotels() {
   });
 }
 
-async function findRoomsFromHotel(hotelId: number) {
-  return prisma.room.findMany({
-    where: { hotelId },
-    select: {
-      id: true,
-      name: true,
-      capacity: true,
-      _count: {
-        select: {
-          Booking: true,
+async function findRoomsFromHotelId(id: number) {
+  return prisma.hotel.findUnique({
+    where: { id },
+    include: {
+      Rooms: {
+        include: {
+          _count: {
+            select: {
+              Booking: true,
+            },
+          },
         },
-      },
-      Hotel: {
-        select: {
-          name: true,
-          image: true,
-        },
+        orderBy: { id: "asc" },
       },
     },
-    orderBy: { id: "asc" },
   });
 }
 
 const hotelRepository = {
   findHotels,
-  findRoomsFromHotel,
+  findRoomsFromHotelId,
 };
 
 export default hotelRepository;

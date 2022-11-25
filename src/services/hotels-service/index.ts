@@ -9,10 +9,9 @@ async function getHotels(userId: number): Promise<GetHotelsResult[]> {
   await validateUserTicketOrFail(userId);
   const hotelsResult = await hotelRepository.findHotels();
 
-  const hotels: GetHotelsResult[] = [];
-  const RoomsData = { maxRoomCapacity: 1, totalVacancies: 0, vacanciesReserved: 0 };
+  const hotels = hotelsResult.map((hotel) => {
+    const RoomsData = { maxRoomCapacity: 1, totalVacancies: 0, vacanciesReserved: 0 };
 
-  hotelsResult.forEach((hotel) => {
     hotel.Rooms.forEach(({ capacity, _count: { Booking: bookings } }) => {
       if (RoomsData.maxRoomCapacity < capacity) {
         RoomsData.maxRoomCapacity = capacity;
@@ -22,46 +21,49 @@ async function getHotels(userId: number): Promise<GetHotelsResult[]> {
       RoomsData.vacanciesReserved += bookings;
     });
 
-    hotels.push({
-      id: hotel.id,
-      name: hotel.name,
-      image: hotel.image,
+    delete hotel.Rooms;
+
+    return {
+      ...hotel,
       maxRoomCapacity: RoomsData.maxRoomCapacity,
       availableVacancies: RoomsData.totalVacancies - RoomsData.vacanciesReserved,
-    });
+    };
   });
 
   return hotels;
 }
 
-export type GetHotelsResult = Omit<Hotel, "createdAt" | "updatedAt"> & {
+export type GetHotelsResult = Hotel & {
   maxRoomCapacity: number;
   availableVacancies: number;
 };
 
-async function getRoomsFromHotel(hotelId: number, userId: number): Promise<GetRoomsFromHotelResult[]> {
+async function getRoomsFromHotel(hotelId: number, userId: number): Promise<GetRoomsFromHotelResult> {
   await validateUserTicketOrFail(userId);
 
-  const roomsResult = await hotelRepository.findRoomsFromHotel(hotelId);
+  const hotel = await hotelRepository.findRoomsFromHotelId(hotelId);
 
-  if (roomsResult.length === 0) throw notFoundError();
+  if (!hotel) throw notFoundError();
 
-  const rooms = roomsResult.map(({ id, name, capacity, _count, Hotel }) => ({
+  const rooms = hotel.Rooms.map(({ id, name, capacity, _count, createdAt, updatedAt }) => ({
     id,
     name,
     capacity,
+    hotelId,
     bookeds: _count.Booking,
-    hotelName: Hotel.name,
-    hotelImage: Hotel.image,
+    createdAt,
+    updatedAt,
   }));
 
-  return rooms;
+  const hotelResult = { ...hotel, Rooms: rooms };
+
+  return hotelResult;
 }
 
-export type GetRoomsFromHotelResult = Omit<Room, "hotelId" | "createdAt" | "updatedAt"> & {
-  bookeds: number;
-  hotelName: string;
-  hotelImage: string;
+export type GetRoomsFromHotelResult = Hotel & {
+  Rooms: (Room & {
+    bookeds: number;
+  })[];
 };
 
 async function validateUserTicketOrFail(userId: number) {
