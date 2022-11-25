@@ -1,11 +1,11 @@
 import { Response } from "express";
 import httpStatus from "http-status";
 import { AuthenticatedRequest } from "@/middlewares";
-import paymentsService, { CreatePayment } from "@/services/payments-service";
+import paymentsService, { CreatePaymentParams } from "@/services/payments-service";
 
 export async function getUserPayment(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const ticketId = Number(req.query.ticketId) | 0;
+  const ticketId = Number(req.query.ticketId) || null;
 
   if (!ticketId) return res.sendStatus(httpStatus.BAD_REQUEST);
 
@@ -23,7 +23,7 @@ export async function getUserPayment(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function postPayment(req: AuthenticatedRequest, res: Response) {
-  const { ticketId, cardData } = req.body as CreatePayment;
+  const { ticketId, cardData } = req.body as CreatePaymentParams;
   const { userId } = req;
 
   try {

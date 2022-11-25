@@ -1,9 +1,9 @@
 import app, { init } from "@/app";
+import supertest from "supertest";
 import faker from "@faker-js/faker";
-import { TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
 import * as jwt from "jsonwebtoken";
-import supertest from "supertest";
+import { TicketStatus } from "@prisma/client";
 import { cleanDb, generateValidTicket, generateValidToken } from "../helpers";
 import {
   createUser,
@@ -87,7 +87,7 @@ describe("GET /hotels", () => {
             id: hotel.id,
             name: hotel.name,
             image: hotel.image,
-            maxCapacityPerRoom: 2,
+            maxRoomCapacity: 2,
             availableVacancies: 3,
           },
         ]);
@@ -96,7 +96,7 @@ describe("GET /hotels", () => {
   });
 });
 
-describe("GET /hotels/id", () => {
+describe("GET /hotels/:hotelId", () => {
   it("should respond with status 401 if no token is given", async () => {
     const response = await server.get("/hotels/1");
 
@@ -170,16 +170,20 @@ describe("GET /hotels/id", () => {
         expect(response.status).toBe(httpStatus.OK);
         expect(response.body).toEqual([
           {
-            id: expect.any(Number),
-            name: expect.any(String),
-            capacity: expect.any(Number),
+            id: hotel.Rooms[0].id,
+            name: hotel.Rooms[0].name,
+            capacity: hotel.Rooms[0].capacity,
             bookeds: expect.any(Number),
+            hotelName: hotel.name,
+            hotelImage: hotel.image,
           },
           {
-            id: expect.any(Number),
-            name: expect.any(String),
-            capacity: expect.any(Number),
+            id: hotel.Rooms[1].id,
+            name: hotel.Rooms[1].name,
+            capacity: hotel.Rooms[1].capacity,
             bookeds: expect.any(Number),
+            hotelName: hotel.name,
+            hotelImage: hotel.image,
           },
         ]);
       });

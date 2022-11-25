@@ -10,12 +10,12 @@ async function getHotels(userId: number): Promise<GetHotelsResult[]> {
   const hotelsResult = await hotelRepository.findHotels();
 
   const hotels: GetHotelsResult[] = [];
-  const RoomsData = { maxCapacityPerRoom: 1, totalVacancies: 0, vacanciesReserved: 0 };
+  const RoomsData = { maxRoomCapacity: 1, totalVacancies: 0, vacanciesReserved: 0 };
 
   hotelsResult.forEach((hotel) => {
     hotel.Rooms.forEach(({ capacity, _count: { Booking: bookings } }) => {
-      if (RoomsData.maxCapacityPerRoom < capacity) {
-        RoomsData.maxCapacityPerRoom = capacity;
+      if (RoomsData.maxRoomCapacity < capacity) {
+        RoomsData.maxRoomCapacity = capacity;
       }
 
       RoomsData.totalVacancies += capacity;
@@ -26,7 +26,7 @@ async function getHotels(userId: number): Promise<GetHotelsResult[]> {
       id: hotel.id,
       name: hotel.name,
       image: hotel.image,
-      maxCapacityPerRoom: RoomsData.maxCapacityPerRoom,
+      maxRoomCapacity: RoomsData.maxRoomCapacity,
       availableVacancies: RoomsData.totalVacancies - RoomsData.vacanciesReserved,
     });
   });
@@ -34,19 +34,35 @@ async function getHotels(userId: number): Promise<GetHotelsResult[]> {
   return hotels;
 }
 
+export type GetHotelsResult = Omit<Hotel, "createdAt" | "updatedAt"> & {
+  maxRoomCapacity: number;
+  availableVacancies: number;
+};
+
 async function getRoomsFromHotel(hotelId: number, userId: number): Promise<GetRoomsFromHotelResult[]> {
   await validateUserTicketOrFail(userId);
 
-  const hotel = await hotelRepository.findHotelById(hotelId);
-
-  if (!hotel) throw notFoundError();
-
   const roomsResult = await hotelRepository.findRoomsFromHotel(hotelId);
 
-  const rooms = roomsResult.map(({ id, name, capacity, _count }) => ({ id, name, capacity, bookeds: _count.Booking }));
+  if (roomsResult.length === 0) throw notFoundError();
+
+  const rooms = roomsResult.map(({ id, name, capacity, _count, Hotel }) => ({
+    id,
+    name,
+    capacity,
+    bookeds: _count.Booking,
+    hotelName: Hotel.name,
+    hotelImage: Hotel.image,
+  }));
 
   return rooms;
 }
+
+export type GetRoomsFromHotelResult = Omit<Room, "hotelId" | "createdAt" | "updatedAt"> & {
+  bookeds: number;
+  hotelName: string;
+  hotelImage: string;
+};
 
 async function validateUserTicketOrFail(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
@@ -55,21 +71,12 @@ async function validateUserTicketOrFail(userId: number) {
 
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!ticket) throw paymentRequiredError();
+  if (!ticket) throw unauthorizedError();
 
   if (ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) throw unauthorizedError();
 
   if (ticket.status !== TicketStatus.PAID) throw paymentRequiredError();
 }
-
-export type GetHotelsResult = Omit<Hotel, "createdAt" | "updatedAt"> & {
-  maxCapacityPerRoom: number;
-  availableVacancies: number;
-};
-
-export type GetRoomsFromHotelResult = Omit<Room, "hotelId" | "createdAt" | "updatedAt"> & {
-  bookeds: number;
-};
 
 const hotelsService = {
   getHotels,

@@ -15,7 +15,7 @@ async function getUserPayment(userId: number, ticketId: number): Promise<Payment
   return payment;
 }
 
-async function postPayment(userId: number, { ticketId, cardData }: CreatePayment): Promise<Payment> {
+async function postPayment(userId: number, { ticketId, cardData }: CreatePaymentParams): Promise<Payment> {
   const ticket = await ticketRepository.findTicketById(ticketId);
 
   if (!ticket) throw notFoundError();
@@ -36,7 +36,7 @@ async function postPayment(userId: number, { ticketId, cardData }: CreatePayment
   return payment;
 }
 
-export type CreatePayment = {
+export type CreatePaymentParams = {
   ticketId: number;
   cardData: {
     issuer: string;

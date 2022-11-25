@@ -21,6 +21,6 @@ export function createHotelWithRooms() {
         },
       },
     },
-    include: { Rooms: true },
+    include: { Rooms: { orderBy: { id: "asc" } } },
   });
 }
