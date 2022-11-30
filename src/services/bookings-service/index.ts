@@ -49,6 +49,26 @@ async function postBooking(userId: number, roomId: number): Promise<PostBookingR
 
 type PostBookingResult = { bookingId: number };
 
+async function putBooking(userId: number, roomId: number, bookingId: number): Promise<PuBookingResult> {
+  await validateUserEnrollmentAndTicketOrFail(userId);
+
+  const userBooking = await bookingRepository.findBookingByUserId(userId);
+
+  if (!userBooking || userBooking.id !== bookingId) throw forbiddenError();
+
+  const room = await hotelRepository.findRoomById(roomId);
+
+  if (!room) throw notFoundError();
+
+  if (room.capacity <= room.Booking.length) throw forbiddenError();
+
+  const booking = await bookingRepository.updateBooking(bookingId, roomId);
+
+  return { bookingId: booking.id };
+}
+
+type PuBookingResult = { bookingId: number };
+
 async function validateUserEnrollmentAndTicketOrFail(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
 
@@ -69,6 +89,7 @@ async function validateUserEnrollmentAndTicketOrFail(userId: number) {
 const bookingsService = {
   getBooking,
   postBooking,
+  putBooking,
 };
 
 export default bookingsService;
