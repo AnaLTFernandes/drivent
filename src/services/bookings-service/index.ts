@@ -42,7 +42,7 @@ async function postBooking(userId: number, roomId: number): Promise<PostBookingR
 
   if (room.capacity <= room.Booking.length) throw forbiddenError();
 
-  const booking = await bookingRepository.createBooking(userId, roomId);
+  const booking = await bookingRepository.upsertBooking({ id: 0, roomId, userId });
 
   return { bookingId: booking.id };
 }
@@ -62,7 +62,7 @@ async function putBooking(userId: number, roomId: number, bookingId: number): Pr
 
   if (room.capacity <= room.Booking.length) throw forbiddenError();
 
-  const booking = await bookingRepository.updateBooking(bookingId, roomId);
+  const booking = await bookingRepository.upsertBooking({ id: bookingId, roomId, userId });
 
   return { bookingId: booking.id };
 }

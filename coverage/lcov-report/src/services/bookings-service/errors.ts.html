@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/services/hotels-service/errors.ts</title>
+    <title>Code coverage report for src/services/bookings-service/errors.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/services/hotels-service</a> errors.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/services/bookings-service</a> errors.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -74,17 +74,17 @@
 <a name='L9'></a><a href='#L9'>9</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ApplicationError } from "@/protocols";
 &nbsp;
-export function paymentRequiredError(): ApplicationError {
+export function forbiddenError(): ApplicationError {
   return {
-    name: "PaymentRequiredError",
-    message: "This action require payment",
+    name: "ForbiddenError",
+    message: "This action is forbidden.",
   };
 }
 &nbsp;</pre></td></tr></table></pre>

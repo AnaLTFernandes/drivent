@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1669766598189" clover="3.2.0">
-  <project timestamp="1669766598189" name="All files">
-    <metrics statements="550" coveredstatements="516" conditionals="71" coveredconditionals="50" methods="91" coveredmethods="83" elements="712" coveredelements="649" complexity="0" loc="550" ncloc="550" packages="26" files="64" classes="64"/>
+<coverage generated="1669840940786" clover="3.2.0">
+  <project timestamp="1669840940786" name="All files">
+    <metrics statements="603" coveredstatements="569" conditionals="97" coveredconditionals="76" methods="101" coveredmethods="93" elements="801" coveredelements="738" complexity="0" loc="603" ncloc="603" packages="26" files="65" classes="65"/>
     <package name="src">
       <metrics statements="22" coveredstatements="16" conditionals="2" coveredconditionals="0" methods="5" coveredmethods="2"/>
       <file name="app.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/app.ts">
@@ -59,7 +59,7 @@
       </file>
     </package>
     <package name="src.controllers">
-      <metrics statements="127" coveredstatements="124" conditionals="15" coveredconditionals="13" methods="14" coveredmethods="14"/>
+      <metrics statements="150" coveredstatements="147" conditionals="28" coveredconditionals="26" methods="16" coveredmethods="16"/>
       <file name="authentication-controller.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/controllers/authentication-controller.ts">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="11" type="stmt"/>
@@ -72,7 +72,7 @@
         <line num="13" count="2" type="stmt"/>
       </file>
       <file name="bookings-controller.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/controllers/bookings-controller.ts">
-        <metrics statements="10" coveredstatements="9" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <metrics statements="33" coveredstatements="32" conditionals="14" coveredconditionals="14" methods="3" coveredmethods="3"/>
         <line num="2" count="11" type="stmt"/>
         <line num="4" count="11" type="stmt"/>
         <line num="6" count="11" type="stmt"/>
@@ -83,6 +83,29 @@
         <line num="14" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="15" count="1" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
+        <line num="22" count="11" type="stmt"/>
+        <line num="23" count="9" type="stmt"/>
+        <line num="24" count="9" type="stmt"/>
+        <line num="26" count="9" type="cond" truecount="3" falsecount="0"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="30" count="8" type="stmt"/>
+        <line num="31" count="8" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="35" count="6" type="cond" truecount="1" falsecount="0"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="39" count="5" type="stmt"/>
+        <line num="43" count="11" type="stmt"/>
+        <line num="44" count="12" type="stmt"/>
+        <line num="45" count="12" type="stmt"/>
+        <line num="46" count="12" type="cond" truecount="2" falsecount="0"/>
+        <line num="48" count="12" type="cond" truecount="6" falsecount="0"/>
+        <line num="49" count="2" type="stmt"/>
+        <line num="52" count="10" type="stmt"/>
+        <line num="53" count="10" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="57" count="8" type="cond" truecount="1" falsecount="0"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="61" count="7" type="stmt"/>
       </file>
       <file name="enrollments-controller.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/controllers/enrollments-controller.ts">
         <metrics statements="20" coveredstatements="19" conditionals="1" coveredconditionals="1" methods="3" coveredmethods="3"/>
@@ -250,7 +273,7 @@
       <file name="not-found-error.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/errors/not-found-error.ts">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="3" count="11" type="stmt"/>
-        <line num="4" count="10" type="stmt"/>
+        <line num="4" count="12" type="stmt"/>
       </file>
       <file name="request-error.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/errors/request-error.ts">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
@@ -260,7 +283,7 @@
       <file name="unauthorized-error.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/errors/unauthorized-error.ts">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="3" count="11" type="stmt"/>
-        <line num="4" count="38" type="stmt"/>
+        <line num="4" count="44" type="stmt"/>
       </file>
     </package>
     <package name="src.middlewares">
@@ -272,18 +295,18 @@
         <line num="5" count="11" type="stmt"/>
         <line num="6" count="11" type="stmt"/>
         <line num="8" count="11" type="stmt"/>
-        <line num="9" count="72" type="stmt"/>
-        <line num="10" count="72" type="cond" truecount="1" falsecount="0"/>
-        <line num="12" count="62" type="stmt"/>
-        <line num="13" count="62" type="cond" truecount="0" falsecount="1"/>
-        <line num="15" count="62" type="stmt"/>
-        <line num="16" count="62" type="stmt"/>
-        <line num="18" count="52" type="stmt"/>
-        <line num="23" count="52" type="cond" truecount="1" falsecount="0"/>
-        <line num="25" count="42" type="stmt"/>
-        <line num="27" count="42" type="stmt"/>
-        <line num="29" count="10" type="stmt"/>
-        <line num="34" count="30" type="stmt"/>
+        <line num="9" count="99" type="stmt"/>
+        <line num="10" count="99" type="cond" truecount="1" falsecount="0"/>
+        <line num="12" count="87" type="stmt"/>
+        <line num="13" count="87" type="cond" truecount="0" falsecount="1"/>
+        <line num="15" count="87" type="stmt"/>
+        <line num="16" count="87" type="stmt"/>
+        <line num="18" count="75" type="stmt"/>
+        <line num="23" count="75" type="cond" truecount="1" falsecount="0"/>
+        <line num="25" count="63" type="stmt"/>
+        <line num="27" count="63" type="stmt"/>
+        <line num="29" count="12" type="stmt"/>
+        <line num="34" count="36" type="stmt"/>
       </file>
       <file name="error-handling-middleware.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/middlewares/error-handling-middleware.ts">
         <metrics statements="14" coveredstatements="2" conditionals="7" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -334,13 +357,16 @@
       </file>
     </package>
     <package name="src.repositories.booking-repository">
-      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
       <file name="index.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/repositories/booking-repository/index.ts">
-        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="1" count="11" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
-        <line num="28" count="11" type="stmt"/>
-        <line num="32" count="11" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="33" count="6" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="40" count="11" type="stmt"/>
+        <line num="47" count="11" type="stmt"/>
       </file>
     </package>
     <package name="src.repositories.enrollment-repository">
@@ -348,7 +374,7 @@
       <file name="index.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/repositories/enrollment-repository/index.ts">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="1" count="11" type="stmt"/>
-        <line num="5" count="21" type="stmt"/>
+        <line num="5" count="39" type="stmt"/>
         <line num="18" count="2" type="stmt"/>
         <line num="30" count="11" type="stmt"/>
         <line num="35" count="11" type="stmt"/>
@@ -365,14 +391,15 @@
       </file>
     </package>
     <package name="src.repositories.hotel-repository">
-      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
       <file name="index.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/repositories/hotel-repository/index.ts">
-        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
         <line num="1" count="11" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
         <line num="22" count="2" type="stmt"/>
-        <line num="39" count="11" type="stmt"/>
-        <line num="44" count="11" type="stmt"/>
+        <line num="40" count="8" type="stmt"/>
+        <line num="43" count="11" type="stmt"/>
+        <line num="49" count="11" type="stmt"/>
       </file>
     </package>
     <package name="src.repositories.payment-repository">
@@ -403,7 +430,7 @@
         <line num="1" count="11" type="stmt"/>
         <line num="2" count="11" type="stmt"/>
         <line num="5" count="2" type="stmt"/>
-        <line num="9" count="13" type="stmt"/>
+        <line num="9" count="29" type="stmt"/>
         <line num="24" count="8" type="stmt"/>
         <line num="33" count="2" type="stmt"/>
         <line num="54" count="3" type="stmt"/>
@@ -609,17 +636,46 @@
       </file>
     </package>
     <package name="src.services.bookings-service">
-      <metrics statements="8" coveredstatements="8" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+      <metrics statements="34" coveredstatements="34" conditionals="14" coveredconditionals="14" methods="5" coveredmethods="5"/>
+      <file name="errors.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/services/bookings-service/errors.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="11" type="stmt"/>
+        <line num="4" count="12" type="stmt"/>
+      </file>
       <file name="index.ts" path="/home/souichi/Documents/Driven/Trabalhos/drivent-back/src/services/bookings-service/index.ts">
-        <metrics statements="8" coveredstatements="8" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <metrics statements="32" coveredstatements="32" conditionals="14" coveredconditionals="14" methods="4" coveredmethods="4"/>
         <line num="1" count="11" type="stmt"/>
         <line num="2" count="11" type="stmt"/>
-        <line num="5" count="2" type="stmt"/>
-        <line num="7" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="24" count="11" type="stmt"/>
-        <line num="28" count="11" type="stmt"/>
+        <line num="3" count="11" type="stmt"/>
+        <line num="4" count="11" type="stmt"/>
+        <line num="5" count="11" type="stmt"/>
+        <line num="6" count="11" type="stmt"/>
+        <line num="7" count="11" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="37" count="8" type="stmt"/>
+        <line num="39" count="4" type="stmt"/>
+        <line num="41" count="4" type="cond" truecount="1" falsecount="0"/>
+        <line num="43" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="45" count="2" type="stmt"/>
+        <line num="47" count="2" type="stmt"/>
+        <line num="53" count="10" type="stmt"/>
+        <line num="55" count="6" type="stmt"/>
+        <line num="57" count="6" type="cond" truecount="3" falsecount="0"/>
+        <line num="59" count="4" type="stmt"/>
+        <line num="61" count="4" type="cond" truecount="1" falsecount="0"/>
+        <line num="63" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="65" count="2" type="stmt"/>
+        <line num="67" count="2" type="stmt"/>
+        <line num="73" count="18" type="stmt"/>
+        <line num="75" count="18" type="cond" truecount="1" falsecount="0"/>
+        <line num="77" count="16" type="stmt"/>
+        <line num="79" count="16" type="cond" truecount="1" falsecount="0"/>
+        <line num="85" count="6" type="stmt"/>
+        <line num="89" count="11" type="stmt"/>
+        <line num="95" count="11" type="stmt"/>
       </file>
     </package>
     <package name="src.services.enrollments-service">
