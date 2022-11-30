@@ -1,7 +1,12 @@
 import { notFoundError } from "@/errors";
 import bookingRepository from "@/repositories/booking-repository";
+import enrollmentRepository from "@/repositories/enrollment-repository";
+import hotelRepository from "@/repositories/hotel-repository";
+import ticketRepository from "@/repositories/ticket-repository";
+import { Hotel, Room, TicketStatus } from "@prisma/client";
+import { forbiddenError } from "./errors";
 
-async function getBooking(userId: number) {
+async function getBooking(userId: number): Promise<GetBookingResult> {
   const bookingResult = await bookingRepository.findBooking(userId);
 
   if (!bookingResult) throw notFoundError();
@@ -21,8 +26,49 @@ async function getBooking(userId: number) {
   return booking;
 }
 
+type GetBookingResult = {
+  bookingId: number;
+  bookeds: number;
+  hotel: Omit<Hotel, "createdAt" | "updatedAt">;
+  room: Omit<Room, "createdAt" | "updatedAt">;
+};
+
+async function postBooking(userId: number, roomId: number): Promise<PostBookingResult> {
+  await validateUserEnrollmentAndTicketOrFail(userId);
+
+  const room = await hotelRepository.findRoomById(roomId);
+
+  if (!room) throw notFoundError();
+
+  if (room.capacity <= room.Booking.length) throw forbiddenError();
+
+  const booking = await bookingRepository.createBooking(userId, roomId);
+
+  return { bookingId: booking.id };
+}
+
+type PostBookingResult = { bookingId: number };
+
+async function validateUserEnrollmentAndTicketOrFail(userId: number) {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+
+  if (!enrollment) throw forbiddenError();
+
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+
+  if (
+    !ticket ||
+    !ticket.TicketType.includesHotel ||
+    ticket.TicketType.isRemote ||
+    ticket.status !== TicketStatus.PAID
+  ) {
+    throw forbiddenError();
+  }
+}
+
 const bookingsService = {
   getBooking,
+  postBooking,
 };
 
 export default bookingsService;
