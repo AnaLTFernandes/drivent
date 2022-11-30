@@ -1,9 +1,9 @@
-import { notFoundError } from "@/errors";
+import { Hotel, Room, TicketStatus } from "@prisma/client";
 import bookingRepository from "@/repositories/booking-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import hotelRepository from "@/repositories/hotel-repository";
 import ticketRepository from "@/repositories/ticket-repository";
-import { Hotel, Room, TicketStatus } from "@prisma/client";
+import { notFoundError } from "@/errors";
 import { forbiddenError } from "./errors";
 
 async function getBooking(userId: number): Promise<GetBookingResult> {
@@ -13,13 +13,13 @@ async function getBooking(userId: number): Promise<GetBookingResult> {
 
   const booking = {
     bookingId: bookingResult.id,
-    bookeds: bookingResult.Room._count.Booking,
     hotel: bookingResult.Room.Hotel,
     room: {
       id: bookingResult.Room.id,
       name: bookingResult.Room.name,
       capacity: bookingResult.Room.capacity,
       hotelId: bookingResult.Room.hotelId,
+      bookeds: bookingResult.Room._count.Booking,
     },
   };
 
@@ -28,9 +28,8 @@ async function getBooking(userId: number): Promise<GetBookingResult> {
 
 type GetBookingResult = {
   bookingId: number;
-  bookeds: number;
   hotel: Omit<Hotel, "createdAt" | "updatedAt">;
-  room: Omit<Room, "createdAt" | "updatedAt">;
+  room: Omit<Room, "createdAt" | "updatedAt"> & { bookeds: number };
 };
 
 async function postBooking(userId: number, roomId: number): Promise<PostBookingResult> {
@@ -49,7 +48,7 @@ async function postBooking(userId: number, roomId: number): Promise<PostBookingR
 
 type PostBookingResult = { bookingId: number };
 
-async function putBooking(userId: number, roomId: number, bookingId: number): Promise<PuBookingResult> {
+async function putBooking(userId: number, roomId: number, bookingId: number): Promise<PutBookingResult> {
   await validateUserEnrollmentAndTicketOrFail(userId);
 
   const userBooking = await bookingRepository.findBookingByUserId(userId);
@@ -67,7 +66,7 @@ async function putBooking(userId: number, roomId: number, bookingId: number): Pr
   return { bookingId: booking.id };
 }
 
-type PuBookingResult = { bookingId: number };
+type PutBookingResult = { bookingId: number };
 
 async function validateUserEnrollmentAndTicketOrFail(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);

@@ -69,12 +69,12 @@ describe("GET /booking", () => {
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual({
         bookingId: booking.id,
-        bookeds: 1,
         room: {
           id: hotel.Rooms[0].id,
           name: hotel.Rooms[0].name,
           capacity: hotel.Rooms[0].capacity,
           hotelId: hotel.Rooms[0].hotelId,
+          bookeds: 1,
         },
         hotel: {
           id: hotel.id,
