@@ -32,8 +32,12 @@ type GetBookingResult = {
   room: Omit<Room, "createdAt" | "updatedAt"> & { bookeds: number };
 };
 
-async function postBooking(userId: number, roomId: number): Promise<PostBookingResult> {
+async function postBooking({ userId, roomId }: CreateBookingParams): Promise<PostBookingResult> {
   await validateUserEnrollmentAndTicketOrFail(userId);
+
+  const userBooking = await bookingRepository.findBookingByUserId(userId);
+
+  if (userBooking) throw forbiddenError();
 
   const room = await hotelRepository.findRoomById(roomId);
 
@@ -41,14 +45,14 @@ async function postBooking(userId: number, roomId: number): Promise<PostBookingR
 
   if (room.capacity <= room.Booking.length) throw forbiddenError();
 
-  const booking = await bookingRepository.upsertBooking({ id: 0, roomId, userId });
+  const booking = await bookingRepository.createBooking(roomId, userId);
 
   return { bookingId: booking.id };
 }
 
 type PostBookingResult = { bookingId: number };
 
-async function putBooking(userId: number, roomId: number, bookingId: number): Promise<PutBookingResult> {
+async function putBooking({ userId, roomId, bookingId }: UpdateBookingParams): Promise<PutBookingResult> {
   await validateUserEnrollmentAndTicketOrFail(userId);
 
   const userBooking = await bookingRepository.findBookingByUserId(userId);
@@ -61,7 +65,7 @@ async function putBooking(userId: number, roomId: number, bookingId: number): Pr
 
   if (room.capacity <= room.Booking.length) throw forbiddenError();
 
-  const booking = await bookingRepository.upsertBooking({ id: bookingId, roomId, userId });
+  const booking = await bookingRepository.updateBooking(bookingId, roomId);
 
   return { bookingId: booking.id };
 }
@@ -84,6 +88,9 @@ async function validateUserEnrollmentAndTicketOrFail(userId: number) {
     throw forbiddenError();
   }
 }
+
+export type CreateBookingParams = { roomId: number; userId: number };
+export type UpdateBookingParams = CreateBookingParams & { bookingId: number };
 
 const bookingsService = {
   getBooking,
