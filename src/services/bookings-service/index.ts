@@ -1,13 +1,13 @@
 import { Hotel, Room, TicketStatus } from "@prisma/client";
+import { notFoundError } from "@/errors";
+import { forbiddenError } from "./errors";
 import bookingRepository from "@/repositories/booking-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import hotelRepository from "@/repositories/hotel-repository";
 import ticketRepository from "@/repositories/ticket-repository";
-import { notFoundError } from "@/errors";
-import { forbiddenError } from "./errors";
 
 async function getBooking(userId: number): Promise<GetBookingResult> {
-  const bookingResult = await bookingRepository.findBooking(userId);
+  const bookingResult = await bookingRepository.findBookingByUserId(userId);
 
   if (!bookingResult) throw notFoundError();
 
@@ -57,7 +57,7 @@ async function putBooking({ userId, roomId, bookingId }: UpdateBookingParams): P
 
   const userBooking = await bookingRepository.findBookingByUserId(userId);
 
-  if (!userBooking || userBooking.id !== bookingId) throw forbiddenError();
+  if (!userBooking || userBooking.id !== bookingId || userBooking.Room.id === roomId) throw forbiddenError();
 
   const room = await hotelRepository.findRoomById(roomId);
 

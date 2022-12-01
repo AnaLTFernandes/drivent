@@ -73,9 +73,7 @@ async function validateUserTicketOrFail(userId: number) {
 
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!ticket) throw unauthorizedError();
-
-  if (ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) throw unauthorizedError();
+  if (!ticket || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) throw unauthorizedError();
 
   if (ticket.status !== TicketStatus.PAID) throw paymentRequiredError();
 }

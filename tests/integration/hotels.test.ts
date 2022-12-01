@@ -11,6 +11,8 @@ import {
   createEnrollmentWithAddress,
   createTicket,
   createTicketTypeWithOrWithoutHotel,
+  createHotelWithoutRooms,
+  createBooking,
 } from "../factories";
 
 beforeAll(async () => {
@@ -52,16 +54,6 @@ describe("GET /hotels", () => {
     it("should respond with status 401 when user does not have an enrollment", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
-
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-    });
-
-    it("should respond with status 401 when user does not have a ticket", async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      await createEnrollmentWithAddress(user);
 
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
 
@@ -161,17 +153,7 @@ describe("GET /hotels/:hotelId", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
 
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
-
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-    });
-
-    it("should respond with status 401 when user does not have a ticket", async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      await createEnrollmentWithAddress(user);
-
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
@@ -203,25 +185,43 @@ describe("GET /hotels/:hotelId", () => {
     });
 
     describe("when ticket is valid", () => {
+      it("should respond with status 400 when param hotelId is invalid", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        await generateValidTicket(user);
+
+        const response = await server.get("/hotels/0").set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      });
+
       it("should respond with status 404 when there is no hotel with given id", async () => {
         const user = await createUser();
         const token = await generateValidToken(user);
         await generateValidTicket(user);
 
-        const response = await server.get("/hotels/-1").set("Authorization", `Bearer ${token}`);
+        const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.NOT_FOUND);
       });
 
-      it("should respond with status 200 and an empty array when there are no rooms created", async () => {
+      it("should respond with status 200 and an empty array of rooms when there are no rooms created", async () => {
+        const hotel = await createHotelWithoutRooms();
         const user = await createUser();
         const token = await generateValidToken(user);
         await generateValidTicket(user);
 
-        const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+        const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.OK);
-        expect(response.body).toEqual([]);
+        expect(response.body).toEqual({
+          id: hotel.id,
+          name: hotel.name,
+          image: hotel.image,
+          createdAt: hotel.createdAt.toISOString(),
+          updatedAt: hotel.updatedAt.toISOString(),
+          Rooms: [],
+        });
       });
 
       it("should respond with status 200 and with rooms data", async () => {
@@ -229,6 +229,7 @@ describe("GET /hotels/:hotelId", () => {
         const user = await createUser();
         const token = await generateValidToken(user);
         await generateValidTicket(user);
+        await createBooking(hotel.Rooms[0].id, user.id);
 
         const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
@@ -245,7 +246,7 @@ describe("GET /hotels/:hotelId", () => {
               name: hotel.Rooms[0].name,
               capacity: hotel.Rooms[0].capacity,
               hotelId: hotel.id,
-              bookeds: expect.any(Number),
+              bookeds: 1,
               createdAt: hotel.Rooms[0].createdAt.toISOString(),
               updatedAt: hotel.Rooms[0].updatedAt.toISOString(),
             },

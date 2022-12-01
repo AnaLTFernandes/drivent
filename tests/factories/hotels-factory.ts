@@ -10,11 +10,11 @@ export function createHotelWithRooms() {
         createMany: {
           data: [
             {
-              name: faker.name.findName(),
+              name: faker.datatype.number().toString(),
               capacity: 1,
             },
             {
-              name: faker.name.findName(),
+              name: faker.datatype.number().toString(),
               capacity: 2,
             },
           ],
@@ -22,5 +22,14 @@ export function createHotelWithRooms() {
       },
     },
     include: { Rooms: { orderBy: { id: "asc" } } },
+  });
+}
+
+export function createHotelWithoutRooms() {
+  return prisma.hotel.create({
+    data: {
+      name: faker.name.findName(),
+      image: faker.image.city(),
+    },
   });
 }

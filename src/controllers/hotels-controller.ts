@@ -23,7 +23,7 @@ export async function getRoomsFromHotel(req: AuthenticatedRequest, res: Response
   const { userId } = req;
   const hotelId = Number(req.params.hotelId) || null;
 
-  if (!hotelId) return res.sendStatus(httpStatus.BAD_REQUEST);
+  if (!hotelId || hotelId < 1) return res.sendStatus(httpStatus.BAD_REQUEST);
 
   try {
     const rooms = await hotelsService.getRoomsFromHotel(hotelId, userId);
