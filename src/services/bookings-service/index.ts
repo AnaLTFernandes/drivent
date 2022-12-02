@@ -53,11 +53,9 @@ async function postBooking({ userId, roomId }: CreateBookingParams): Promise<Pos
 type PostBookingResult = { bookingId: number };
 
 async function putBooking({ userId, roomId, bookingId }: UpdateBookingParams): Promise<PutBookingResult> {
-  await validateUserEnrollmentAndTicketOrFail(userId);
+  const booking = await bookingRepository.findBookingById(bookingId);
 
-  const userBooking = await bookingRepository.findBookingByUserId(userId);
-
-  if (!userBooking || userBooking.id !== bookingId || userBooking.Room.id === roomId) throw forbiddenError();
+  if (!booking || booking.userId !== userId || booking.Room.id === roomId) throw forbiddenError();
 
   const room = await hotelRepository.findRoomById(roomId);
 
@@ -65,9 +63,9 @@ async function putBooking({ userId, roomId, bookingId }: UpdateBookingParams): P
 
   if (room.capacity <= room.Booking.length) throw forbiddenError();
 
-  const booking = await bookingRepository.updateBooking(bookingId, roomId);
+  const updatedBooking = await bookingRepository.updateBooking(bookingId, roomId);
 
-  return { bookingId: booking.id };
+  return { bookingId: updatedBooking.id };
 }
 
 type PutBookingResult = { bookingId: number };

@@ -278,21 +278,11 @@ describe("PUT /booking/:bookingId", () => {
     });
 
     describe("when body is valid", () => {
-      it("should respond with status 403 if user does not have an enrollment", async () => {
-        const token = await generateValidToken();
-        const body = { roomId: 1 };
-
-        const response = await server.put("/booking/1").set("Authorization", `Bearer ${token}`).send(body);
-
-        expect(response.status).toBe(httpStatus.FORBIDDEN);
-      });
-
-      it("should respond with status 403 if ticket does not have a valid ticket type", async () => {
+      it("should respond with status 403 if user does not have a booking", async () => {
         const user = await createUser();
         const token = await generateValidToken(user);
-        const enrollment = await createEnrollmentWithAddress(user);
-        const ticketType = await createTicketTypeWithOrWithoutHotel(false);
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+        await generateValidTicket(user);
+        await createHotelWithRooms();
         const body = { roomId: 1 };
 
         const response = await server.put("/booking/1").set("Authorization", `Bearer ${token}`).send(body);
@@ -300,121 +290,82 @@ describe("PUT /booking/:bookingId", () => {
         expect(response.status).toBe(httpStatus.FORBIDDEN);
       });
 
-      it("should respond with status 403 if ticket have a valid ticket type but not is paid", async () => {
+      it("should respond with status 403 if user does not own booking", async () => {
         const user = await createUser();
         const token = await generateValidToken(user);
-        const enrollment = await createEnrollmentWithAddress(user);
-        const ticketType = await createTicketTypeWithOrWithoutHotel();
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+        await generateValidTicket(user);
+        const hotel = await createHotelWithRooms();
+
+        const otherUser = await createUser();
+        const booking = await createBooking(hotel.Rooms[0].id, otherUser.id);
+
         const body = { roomId: 1 };
 
-        const response = await server.put("/booking/1").set("Authorization", `Bearer ${token}`).send(body);
+        const response = await server.put(`/booking/${booking.id}`).set("Authorization", `Bearer ${token}`).send(body);
 
         expect(response.status).toBe(httpStatus.FORBIDDEN);
       });
 
-      describe("when ticket is valid", () => {
-        it("should respond with status 403 if user does not have a booking", async () => {
-          const user = await createUser();
-          const token = await generateValidToken(user);
-          await generateValidTicket(user);
-          await createHotelWithRooms();
-          const body = { roomId: 1 };
+      it("should respond with status 404 if room id does not exist", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        await generateValidTicket(user);
+        const hotel = await createHotelWithRooms();
+        const booking = await createBooking(hotel.Rooms[0].id, user.id);
 
-          const response = await server.put("/booking/1").set("Authorization", `Bearer ${token}`).send(body);
+        const body = { roomId: 1 };
 
-          expect(response.status).toBe(httpStatus.FORBIDDEN);
-        });
+        const response = await server.put(`/booking/${booking.id}`).set("Authorization", `Bearer ${token}`).send(body);
 
-        it("should respond with status 403 if user does not own booking", async () => {
-          const user = await createUser();
-          const token = await generateValidToken(user);
-          await generateValidTicket(user);
-          const hotel = await createHotelWithRooms();
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+      });
 
-          const otherUser = await createUser();
-          const booking = await createBooking(hotel.Rooms[0].id, otherUser.id);
+      it("should respond with status 403 if room has no vacancy", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        await generateValidTicket(user);
+        const hotel = await createHotelWithRooms();
+        const booking = await createBooking(hotel.Rooms[1].id, user.id);
 
-          const body = { roomId: 1 };
+        const otherUser = await createUser();
+        await createBooking(hotel.Rooms[0].id, otherUser.id);
 
-          const response = await server
-            .put(`/booking/${booking.id}`)
-            .set("Authorization", `Bearer ${token}`)
-            .send(body);
+        const body = { roomId: hotel.Rooms[0].id };
 
-          expect(response.status).toBe(httpStatus.FORBIDDEN);
-        });
+        const response = await server.put(`/booking/${booking.id}`).set("Authorization", `Bearer ${token}`).send(body);
 
-        it("should respond with status 404 if room id does not exist", async () => {
-          const user = await createUser();
-          const token = await generateValidToken(user);
-          await generateValidTicket(user);
-          const hotel = await createHotelWithRooms();
-          const booking = await createBooking(hotel.Rooms[0].id, user.id);
+        expect(response.status).toBe(httpStatus.FORBIDDEN);
+      });
 
-          const body = { roomId: 1 };
+      it("should respond with status 200 and with updated booking id", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        await generateValidTicket(user);
+        const hotel = await createHotelWithRooms();
+        const booking = await createBooking(hotel.Rooms[1].id, user.id);
 
-          const response = await server
-            .put(`/booking/${booking.id}`)
-            .set("Authorization", `Bearer ${token}`)
-            .send(body);
+        const body = { roomId: hotel.Rooms[0].id };
 
-          expect(response.status).toBe(httpStatus.NOT_FOUND);
-        });
+        const response = await server.put(`/booking/${booking.id}`).set("Authorization", `Bearer ${token}`).send(body);
 
-        it("should respond with status 403 if room has no vacancy", async () => {
-          const user = await createUser();
-          const token = await generateValidToken(user);
-          await generateValidTicket(user);
-          const hotel = await createHotelWithRooms();
-          const booking = await createBooking(hotel.Rooms[1].id, user.id);
+        expect(response.status).toBe(httpStatus.OK);
+        expect(response.body).toEqual({ bookingId: booking.id });
+      });
 
-          const otherUser = await createUser();
-          await createBooking(hotel.Rooms[0].id, otherUser.id);
+      it("should update booking in the database", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        await generateValidTicket(user);
+        const hotel = await createHotelWithRooms();
+        const booking = await createBooking(hotel.Rooms[1].id, user.id);
 
-          const body = { roomId: hotel.Rooms[0].id };
+        const body = { roomId: hotel.Rooms[0].id };
 
-          const response = await server
-            .put(`/booking/${booking.id}`)
-            .set("Authorization", `Bearer ${token}`)
-            .send(body);
+        await server.put(`/booking/${booking.id}`).set("Authorization", `Bearer ${token}`).send(body);
 
-          expect(response.status).toBe(httpStatus.FORBIDDEN);
-        });
+        const afterPutBooking = await prisma.booking.findUnique({ where: { id: booking.id } });
 
-        it("should respond with status 200 and with updated booking id", async () => {
-          const user = await createUser();
-          const token = await generateValidToken(user);
-          await generateValidTicket(user);
-          const hotel = await createHotelWithRooms();
-          const booking = await createBooking(hotel.Rooms[1].id, user.id);
-
-          const body = { roomId: hotel.Rooms[0].id };
-
-          const response = await server
-            .put(`/booking/${booking.id}`)
-            .set("Authorization", `Bearer ${token}`)
-            .send(body);
-
-          expect(response.status).toBe(httpStatus.OK);
-          expect(response.body).toEqual({ bookingId: booking.id });
-        });
-
-        it("should update booking in the database", async () => {
-          const user = await createUser();
-          const token = await generateValidToken(user);
-          await generateValidTicket(user);
-          const hotel = await createHotelWithRooms();
-          const booking = await createBooking(hotel.Rooms[1].id, user.id);
-
-          const body = { roomId: hotel.Rooms[0].id };
-
-          await server.put(`/booking/${booking.id}`).set("Authorization", `Bearer ${token}`).send(body);
-
-          const afterPutBooking = await prisma.booking.findUnique({ where: { id: booking.id } });
-
-          expect(afterPutBooking.roomId).toBe(hotel.Rooms[0].id);
-        });
+        expect(afterPutBooking.roomId).toBe(hotel.Rooms[0].id);
       });
     });
   });
